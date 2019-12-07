@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import PoolCreator from './components/PoolCreator';
+import AnswersSelector from './components/AnswersSelector';
+import UsersManagement from './components/UsersManagement';
 
-function App() {
+const App = () => {
+  const [options, setOptions] = useState([]);
+  const [label, setLabel] = useState(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App p-3">
+      <UsersManagement />
+      <div className="d-flex justify-content-start">
+        <PoolCreator onChange={({ question, answers }) => {
+          setOptions(answers);
+          setLabel(question);
+        }}
+        />
+        <AnswersSelector options={options} label={label} />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
