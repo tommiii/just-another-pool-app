@@ -1,6 +1,7 @@
 import {
   SET_USER_ID,
   ADD_USER,
+  UPDATE_POOLS,
 } from '../constants';
 
 const initialState = {
@@ -51,6 +52,13 @@ const poolApp = (state = initialState, action) => {
       return {
         ...state,
         users: [...state.users, action.user],
+
+      };
+    case UPDATE_POOLS:
+      return {
+        ...state,
+        pools: action.pools,
+
 
       };
     default:

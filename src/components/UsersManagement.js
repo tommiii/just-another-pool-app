@@ -3,12 +3,7 @@ import _ from 'lodash';
 import {
   Button, Modal, Form, FormGroup, Label, Input, Badge,
 } from 'reactstrap';
-
-const ROLES = {
-  OWNER: 'OWNER',
-  USER: 'USER',
-  RESPONDENT: 'RESPONDENT',
-};
+import { ROLES } from '../constants';
 
 
 const UsersManagement = ({
@@ -49,10 +44,14 @@ const UsersManagement = ({
 
   return (
     <div className="UsersManagement p-3">
-      <div className="d-flex justify-content-between">
-        <Button onClick={toggleCreateUserModal}>Create new user</Button>
-        {renderUsers()}
-        <span>
+      <div className="d-flex justify-content-start">
+        <span className="mr-3">
+          <Button onClick={toggleCreateUserModal}>Create new user</Button>
+        </span>
+        <span className="mr-3">
+          {renderUsers()}
+        </span>
+        <span className="mr-3 mt-1">
           Current user:
           <Badge className="ml-2" color="secondary">
             {' '}
