@@ -6,9 +6,12 @@ import {
 import { ROLES } from '../constants';
 
 
-const PoolManager = ({ onUpdatePool, userPools, role }) => {
+const PoolManager = ({
+  onUpdatePool, onSelectAnswer, userPools, role, selectedUserId,
+}) => {
   const [question, setQuestion] = useState('');
   const [answers, setAnswers] = useState([]);
+  const [answerIndex, setAnswerIndex] = useState(null);
   const [currentPoolId, setCurrentPoolId] = useState(null);
 
   const setPool = (poolId) => {
@@ -16,6 +19,12 @@ const PoolManager = ({ onUpdatePool, userPools, role }) => {
     setCurrentPoolId(poolId);
     setQuestion(userPools[index].question);
     setAnswers(userPools[index].options);
+    const { answersPerUser } = userPools[index];
+    const currentAnswer = _.find(answersPerUser, ({ userId }) => _.toNumber(userId) === _.toNumber(selectedUserId));
+    if (!_.isNil(currentAnswer)) {
+      const { answer } = currentAnswer;
+      setAnswerIndex(answer);
+    }
   };
 
   const resetForm = () => {
@@ -23,6 +32,7 @@ const PoolManager = ({ onUpdatePool, userPools, role }) => {
     setAnswers([]);
     setCurrentPoolId(null);
   };
+
 
   const renderAnswersForm = () => _.map(answers, (answer, index) => {
     return (
@@ -69,6 +79,10 @@ const PoolManager = ({ onUpdatePool, userPools, role }) => {
           {role === ROLES.USER && (
             <Label check>
               <Input
+                checked={answerIndex === index}
+                onChange={() => {
+                  setAnswerIndex(index);
+                }}
                 type="radio"
                 name="answer"
                 id={`answer${index}`}
@@ -132,11 +146,15 @@ const PoolManager = ({ onUpdatePool, userPools, role }) => {
           <span className="ml-auto">
             {role === ROLES.OWNER && <Button className="mr-2" onClick={resetForm}>Reset</Button>}
             <Button onClick={() => {
-              onUpdatePool({ question, answers, poolId: currentPoolId });
+              if (role === ROLES.OWNER) {
+                onUpdatePool({ question, answers, poolId: currentPoolId });
+              }
+              if (role === ROLES.USER) {
+                onSelectAnswer({ answerIndex, poolId: currentPoolId });
+              }
             }}
             >
               Save
-
             </Button>
           </span>
         </div>

@@ -34,7 +34,7 @@ const initialState = {
         'This conversation is going out of control...',
       ],
       answersPerUser: [
-        { user: 1, answer: 2 },
+        { userId: 1, answer: 2 },
       ],
     },
   ],
