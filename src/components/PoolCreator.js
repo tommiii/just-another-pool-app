@@ -14,10 +14,11 @@ const PoolCreator = ({ onChange, onUpdatePool, userPools }) => {
     onChange({ question, answers });
   });
 
-  const setPool = (id) => {
-    setCurrentPoolId(id);
-    setQuestion(userPools[id].question);
-    setAnswers(userPools[id].options);
+  const setPool = (poolId) => {
+    const index = _.findIndex(userPools, (({ id }) => _.toNumber(id) === _.toNumber(poolId)));
+    setCurrentPoolId(poolId);
+    setQuestion(userPools[index].question);
+    setAnswers(userPools[index].options);
   };
 
   const resetForm = () => {
