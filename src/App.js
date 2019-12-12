@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import PoolCreator from './components/PoolCreator';
-import AnswersSelector from './components/AnswersSelector';
+import PoolCreator from './components/PoolManager';
 import UsersManagement from './components/UsersManagement';
 import { ROLES } from './constants';
 import {
@@ -14,12 +13,17 @@ import {
 const App = ({
   poolApp, onChangeUser, onAddUser, onUpdatePools,
 }) => {
-  const [options, setOptions] = useState([]);
-  const [label, setLabel] = useState(null);
   const { users, selectedUserId, pools } = poolApp;
   const selectedUser = _.find(users, ({ id }) => id === selectedUserId);
-  const userPools = _.filter(pools, ({ ownerId }) => ownerId === selectedUserId);
   const { role } = selectedUser;
+  let userPools;
+  if (role === ROLES.OWNER) {
+    userPools = _.filter(pools, ({ ownerId }) => ownerId === selectedUserId);
+  }
+  if (role === ROLES.USER) {
+    userPools = pools;
+  }
+
   return (
     <div className="App p-3">
       <UsersManagement
@@ -29,8 +33,9 @@ const App = ({
         users={users}
       />
       <div className="content mt-5">
-        {role === ROLES.OWNER && (
+        {_.includes([ROLES.OWNER, ROLES.USER], role) && (
           <PoolCreator
+            role={role}
             selectedUser={selectedUser}
             userPools={userPools}
             onUpdatePool={({ question, answers, poolId }) => {
@@ -48,13 +53,8 @@ const App = ({
                 onUpdatePools(newPools);
               }
             }}
-            onChange={({ question, answers }) => {
-              setOptions(answers);
-              setLabel(question);
-            }}
           />
         )}
-        {role === ROLES.USER && <AnswersSelector options={options} label={label} />}
       </div>
     </div>
   );

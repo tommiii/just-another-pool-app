@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import {
   Button, Form, FormGroup, Label, Input,
 } from 'reactstrap';
+import { ROLES } from '../constants';
 
 
-const PoolCreator = ({ onChange, onUpdatePool, userPools }) => {
+const PoolManager = ({ onUpdatePool, userPools, role }) => {
   const [question, setQuestion] = useState('');
   const [answers, setAnswers] = useState([]);
   const [currentPoolId, setCurrentPoolId] = useState(null);
-
-  useEffect(() => {
-    onChange({ question, answers });
-  });
 
   const setPool = (poolId) => {
     const index = _.findIndex(userPools, (({ id }) => _.toNumber(id) === _.toNumber(poolId)));
@@ -30,11 +27,13 @@ const PoolCreator = ({ onChange, onUpdatePool, userPools }) => {
   const renderAnswersForm = () => _.map(answers, (answer, index) => {
     return (
       <div key={index}>
-        <FormGroup>
-          <Label for={`answer${index}`}>
-            {`Answer #${index + 1}`}
-          </Label>
-          {index > 0 && (
+        <FormGroup tag="fieldset" check={role === ROLES.USER}>
+          {role === ROLES.OWNER && (
+            <Label for={`answer${index}`}>
+              {`Answer #${index + 1}`}
+            </Label>
+          )}
+          {index > 0 && role === ROLES.OWNER && (
             <Button
               className="ml-2"
               onClick={() => {
@@ -50,21 +49,33 @@ const PoolCreator = ({ onChange, onUpdatePool, userPools }) => {
 
             </Button>
           )}
-          <Input
-            onChange={({ target: { value } }) => {
-              setAnswers(currentAnswers => {
-                const newAnswersArray = [...currentAnswers];
-                newAnswersArray[index] = value;
-                return newAnswersArray;
-              });
-            }}
-            type="text"
-            value={answer}
-            name={`answer${index}`}
-            id={`answer${index}`}
-            placeholder="Type your answer..."
-            maxLength="80"
-          />
+          {role === ROLES.OWNER && (
+            <Input
+              onChange={({ target: { value } }) => {
+                setAnswers(currentAnswers => {
+                  const newAnswersArray = [...currentAnswers];
+                  newAnswersArray[index] = value;
+                  return newAnswersArray;
+                });
+              }}
+              type="text"
+              value={answer}
+              name={`answer${index}`}
+              id={`answer${index}`}
+              placeholder="Type your answer..."
+              maxLength="80"
+            />
+          )}
+          {role === ROLES.USER && (
+            <Label check>
+              <Input
+                type="radio"
+                name="answer"
+                id={`answer${index}`}
+              />
+              {role === ROLES.USER && answer}
+            </Label>
+          )}
         </FormGroup>
       </div>
     );
@@ -90,23 +101,36 @@ const PoolCreator = ({ onChange, onUpdatePool, userPools }) => {
     <div className="PoolCreator p-3">
       <Form>
         <div className="d-flex">
-          <span className="mr-3">
-            <Button onClick={resetForm}>Create new pool</Button>
-          </span>
+          {role === ROLES.OWNER && (
+            <span className="mr-3">
+              <Button onClick={resetForm}>Create new pool</Button>
+            </span>
+          )}
           {_.size(userPools) && renderPools()}
         </div>
 
         <FormGroup>
           <Label for="question">Question</Label>
-          <Input onChange={({ target: { value } }) => { setQuestion(value); }} value={question} type="text" name="question" id="question" placeholder="Type your question..." maxLength="80" />
+          <Input
+            disabled={role === ROLES.USER}
+            onChange={({ target: { value } }) => { setQuestion(value); }}
+            value={question}
+            type="text"
+            name="question"
+            id="question"
+            placeholder={role === ROLES.OWNER ? 'Type your question...' : 'Select a pool from the above menu'}
+            maxLength="80"
+          />
         </FormGroup>
         {renderAnswersForm()}
         <div className="d-flex">
-          <span className="mr-auto">
-            <Button onClick={() => { setAnswers(currentAnswer => [...currentAnswer, '']); }}>Add Answer</Button>
-          </span>
+          {role === ROLES.OWNER && (
+            <span className="mr-auto">
+              <Button onClick={() => { setAnswers(currentAnswer => [...currentAnswer, '']); }}>Add Answer</Button>
+            </span>
+          )}
           <span className="ml-auto">
-            <Button className="mr-2" onClick={resetForm}>Reset</Button>
+            {role === ROLES.OWNER && <Button className="mr-2" onClick={resetForm}>Reset</Button>}
             <Button onClick={() => {
               onUpdatePool({ question, answers, poolId: currentPoolId });
             }}
@@ -121,8 +145,8 @@ const PoolCreator = ({ onChange, onUpdatePool, userPools }) => {
   );
 };
 
-PoolCreator.defaultProps = {
-  onChange: () => { },
+PoolManager.defaultProps = {
+  // onChange: () => { },
 };
 
-export default PoolCreator;
+export default PoolManager;
