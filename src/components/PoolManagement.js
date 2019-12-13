@@ -157,6 +157,7 @@ const PoolManagement = ({
               onClick={() => {
                 if (role === ROLES.OWNER) {
                   onUpdatePool({ question, answers, poolId: currentPoolId });
+                  resetForm();
                 }
                 if (role === ROLES.RESPONDENT) {
                   onSelectAnswer({ answerIndex, poolId: currentPoolId });
