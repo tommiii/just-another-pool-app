@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import poolApp from './reducers';
-import App from './App';
+import PoolApp from './containers/PoolApp';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const store = createStore(
@@ -13,7 +13,7 @@ const store = createStore(
 
 render(
   <Provider store={store}>
-    <App />
+    <PoolApp />
   </Provider>,
   document.getElementById('root')
 );

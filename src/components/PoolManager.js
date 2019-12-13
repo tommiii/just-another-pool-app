@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Octicon, { X } from '@primer/octicons-react';
 import _ from 'lodash';
 import {
@@ -8,12 +8,18 @@ import { ROLES } from '../constants';
 
 
 const PoolManager = ({
-  onUpdatePool, onSelectAnswer, userPools, role, selectedUserId, onSelectPool,
+  onUpdatePool, onSelectAnswer, onSelectPool, userPools, role, selectedUserId,
 }) => {
   const [question, setQuestion] = useState('');
   const [answers, setAnswers] = useState([]);
   const [answerIndex, setAnswerIndex] = useState(null);
   const [currentPoolId, setCurrentPoolId] = useState(null);
+
+  useEffect(() => {
+    setCurrentPoolId(null);
+    setQuestion('');
+    setAnswers([]);
+  }, [selectedUserId]);
 
   const setPool = (poolId) => {
     const index = _.findIndex(userPools, (({ id }) => _.toNumber(id) === _.toNumber(poolId)));
@@ -98,6 +104,7 @@ const PoolManager = ({
 
   const renderPools = () => {
     const currentValue = _.findIndex(userPools, ({ id }) => !_.isNil(currentPoolId) && id === _.toNumber(currentPoolId));
+    // console.log(currentValue, currentPoolId);
     return (
       <FormGroup>
         <Input value={currentValue !== -1 ? currentValue : 'Select pool'} onChange={({ target: { value } }) => { setPool(value); }} type="select" name="select" id="selectPool">
@@ -146,14 +153,16 @@ const PoolManager = ({
           )}
           <span className="ml-auto">
             {role === ROLES.OWNER && <Button className="mr-2" onClick={resetForm}>Reset</Button>}
-            <Button onClick={() => {
-              if (role === ROLES.OWNER) {
-                onUpdatePool({ question, answers, poolId: currentPoolId });
-              }
-              if (role === ROLES.RESPONDENT) {
-                onSelectAnswer({ answerIndex, poolId: currentPoolId });
-              }
-            }}
+            <Button
+              disabled={_.size(answers) < 2 || _.isNil(question)}
+              onClick={() => {
+                if (role === ROLES.OWNER) {
+                  onUpdatePool({ question, answers, poolId: currentPoolId });
+                }
+                if (role === ROLES.RESPONDENT) {
+                  onSelectAnswer({ answerIndex, poolId: currentPoolId });
+                }
+              }}
             >
               Save
             </Button>
@@ -165,7 +174,9 @@ const PoolManager = ({
 };
 
 PoolManager.defaultProps = {
-  // onChange: () => { },
+  onUpdatePool: () => { },
+  onSelectAnswer: () => { },
+  onSelectPool: () => { },
 };
 
 export default PoolManager;
