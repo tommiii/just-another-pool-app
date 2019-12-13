@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import Octicon, { Organization } from '@primer/octicons-react';
+import { Button, Modal } from 'reactstrap';
 import PoolManager from './components/PoolManager';
 import PoolChart from './components/PoolChart';
 import UsersManagement from './components/UsersManagement';
@@ -15,7 +17,9 @@ const App = ({
   poolApp, onChangeUser, onAddUser, onUpdatePools,
 }) => {
   const [currentPoolId, setCurrentPoolId] = useState(null);
+  const [userModal, setUserModal] = useState(false);
   const { users, selectedUserId, pools } = poolApp;
+  const toggleUserModal = () => { setUserModal(currentState => !currentState); };
   const selectedUser = _.find(users, ({ id }) => id === selectedUserId);
   const { role } = selectedUser;
   let userPools;
@@ -30,14 +34,25 @@ const App = ({
   const currentPool = _.find(pools, (({ id }) => !_.isNil(currentPoolId) && _.toNumber(id) === _.toNumber(currentPoolId)));
 
   return (
-    <div className="App p-3">
-      <UsersManagement
-        onChangeUser={(newId) => { onChangeUser(newId); }}
-        onAddUser={(newUser => { onAddUser(newUser); })}
-        selectedUserId={selectedUserId}
-        users={users}
-      />
-      <div className="content d-flex justify-content-between mt-5">
+    <div className="App p-3 h-100">
+      <div className="float-right d-flex">
+        <Button
+          onClick={toggleUserModal}
+          className="rounded-circle"
+        >
+          <Octicon size="small" icon={Organization} />
+        </Button>
+
+      </div>
+      <Modal isOpen={userModal} toggle={toggleUserModal}>
+        <UsersManagement
+          onChangeUser={(newId) => { onChangeUser(newId); setUserModal(false); }}
+          onAddUser={(newUser => { onAddUser(newUser); })}
+          selectedUserId={selectedUserId}
+          users={users}
+        />
+      </Modal>
+      <div className="content d-flex justify-content-start">
         <PoolManager
           role={role}
           selectedUserId={selectedUserId}

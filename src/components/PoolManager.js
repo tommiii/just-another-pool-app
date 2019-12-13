@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Octicon, { X } from '@primer/octicons-react';
 import _ from 'lodash';
 import {
   Button, Form, FormGroup, Label, Input,
@@ -40,13 +41,13 @@ const PoolManager = ({
       <div key={index}>
         <FormGroup tag="fieldset" check={role === ROLES.RESPONDENT}>
           {role === ROLES.OWNER && (
-            <Label for={`answer${index}`}>
+            <Label className="my-3" for={`answer${index}`}>
               {`Answer #${index + 1}`}
             </Label>
           )}
           {index > 0 && role === ROLES.OWNER && (
             <Button
-              className="ml-2"
+              className="ml-2 rounded-pill"
               onClick={() => {
                 setAnswers(currentAnswer => {
                   const newAnswersArray = _.filter(currentAnswer, (value, subIndex) => index !== subIndex);
@@ -56,8 +57,7 @@ const PoolManager = ({
               color="danger"
               size="sm"
             >
-              Delete
-
+              <Octicon size="small" icon={X} />
             </Button>
           )}
           {role === ROLES.OWNER && (
@@ -114,7 +114,7 @@ const PoolManager = ({
 
   return (
     <div className="PoolManager p-3">
-      <Form>
+      <Form autoComplete="off">
         <div className="d-flex">
           {role === ROLES.OWNER && (
             <span className="mr-3">
