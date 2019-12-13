@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import Octicon, { Organization } from '@primer/octicons-react';
 import { Button, Modal } from 'reactstrap';
-import PoolManager from '../components/PoolManager';
+import PoolManager from '../components/PoolManagement';
 import PoolChart from '../components/PoolChart';
 import UsersManagement from '../components/UsersManagement';
 import { ROLES } from '../constants';
@@ -55,12 +55,15 @@ const PoolApp = ({
           <PoolManager
             role={role}
             selectedUserId={selectedUserId}
+            onResetForm={() => {
+              setCurrentPoolId(null);
+            }}
             onSelectAnswer={({ poolId, answerIndex }) => {
               const poolToUpdateIndex = _.findIndex(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
               const { answersPerUser } = pools[poolToUpdateIndex];
               const userIdex = _.findIndex(answersPerUser, ({ userId }) => _.toNumber(userId) === _.toNumber(selectedUserId));
               let newPool;
-              if (!_.isNil(userIdex)) {
+              if (userIdex !== -1) {
                 const newAnswersPerUser = _.set([...answersPerUser], [userIdex], { userId: selectedUserId, answer: answerIndex });
                 newPool = { ...pools[poolToUpdateIndex], answersPerUser: newAnswersPerUser };
               } else {
@@ -85,6 +88,7 @@ const PoolApp = ({
                 };
                 const newPools = [...pools, newPool];
                 onUpdatePools(newPools);
+                setCurrentPoolId(null);
               }
             }}
           />

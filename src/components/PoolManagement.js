@@ -7,8 +7,8 @@ import {
 import { ROLES } from '../constants';
 
 
-const PoolManager = ({
-  onUpdatePool, onSelectAnswer, onSelectPool, userPools, role, selectedUserId,
+const PoolManagement = ({
+  onResetForm, onUpdatePool, onSelectAnswer, onSelectPool, userPools, role, selectedUserId,
 }) => {
   const [question, setQuestion] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -39,6 +39,7 @@ const PoolManager = ({
     setQuestion('');
     setAnswers([]);
     setCurrentPoolId(null);
+    onResetForm();
   };
 
 
@@ -103,11 +104,9 @@ const PoolManager = ({
   });
 
   const renderPools = () => {
-    const currentValue = _.findIndex(userPools, ({ id }) => !_.isNil(currentPoolId) && id === _.toNumber(currentPoolId));
-    // console.log(currentValue, currentPoolId);
     return (
       <FormGroup>
-        <Input value={currentValue !== -1 ? currentValue : 'Select pool'} onChange={({ target: { value } }) => { setPool(value); }} type="select" name="select" id="selectPool">
+        <Input value={_.isNil(currentPoolId) ? 'Select pool' : currentPoolId} onChange={({ target: { value } }) => { setPool(value); }} type="select" name="select" id="selectPool">
           <option disabled value="Select pool">Select pool</option>
           {_.map(userPools, ({ question: poolQuestion, id }, index) => (
             <option key={index} value={id}>
@@ -120,7 +119,7 @@ const PoolManager = ({
   };
 
   return (
-    <div className="PoolManager p-3">
+    <div className="PoolManagement p-3">
       <Form autoComplete="off">
         <div className="d-flex">
           {role === ROLES.OWNER && (
@@ -173,10 +172,11 @@ const PoolManager = ({
   );
 };
 
-PoolManager.defaultProps = {
+PoolManagement.defaultProps = {
   onUpdatePool: () => { },
   onSelectAnswer: () => { },
   onSelectPool: () => { },
+  onPoolCreate: () => { },
 };
 
-export default PoolManager;
+export default PoolManagement;
