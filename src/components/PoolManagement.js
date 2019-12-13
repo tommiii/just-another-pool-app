@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Octicon, { X } from '@primer/octicons-react';
+import Octicon, { X, Plus, PlusSmall } from '@primer/octicons-react';
 import _ from 'lodash';
 import {
   Button, Form, FormGroup, Label, Input,
@@ -124,7 +124,9 @@ const PoolManagement = ({
         <div className="d-flex">
           {role === ROLES.OWNER && (
             <span className="mr-3">
-              <Button onClick={resetForm}>Create new pool</Button>
+              <Button onClick={resetForm}>
+                <Octicon size="small" icon={Plus} />
+              </Button>
             </span>
           )}
           {_.size(userPools) && renderPools()}
@@ -147,7 +149,9 @@ const PoolManagement = ({
         <div className="d-flex">
           {role === ROLES.OWNER && (
             <span className="mr-auto">
-              <Button onClick={() => { setAnswers(currentAnswer => [...currentAnswer, '']); }}>Add Answer</Button>
+              <Button onClick={() => { setAnswers(currentAnswer => [...currentAnswer, '']); }}>
+                <Octicon size="small" icon={PlusSmall} />
+              </Button>
             </span>
           )}
           <span className="ml-auto">

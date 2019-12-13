@@ -32,11 +32,11 @@ const initialState = {
     {
       id: 0,
       ownerId: 0,
-      question: 'What do you mean you\'ve never seen Blade Runner?',
+      question: 'What does Marsellus Wallace look like?',
       options: [
-        'Sorry, I don\'t like movies, my life is miserable...',
-        'Hey man, your\'re quoting Alex Turner, I like that!',
-        'This conversation is going out of control...',
+        'What?',
+        'What??',
+        'What???',
       ],
       answersPerUser: [
         { userId: 1, answer: 0 },
@@ -47,11 +47,11 @@ const initialState = {
     {
       id: 1,
       ownerId: 0,
-      question: 'This is a question',
+      question: 'You know what they call a Quarter Pounder with Cheese in Paris?',
       options: [
-        'This is an answer',
-        'This is another answer',
-        'This is another answer too',
+        'They don\'t call it a Quarter Pounder with Cheese?',
+        'Royale with Cheese',
+        'What\'d they call it?',
       ],
       answersPerUser: [
         { userId: 1, answer: 1 },
