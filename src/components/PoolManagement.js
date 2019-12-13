@@ -142,7 +142,7 @@ const PoolManagement = ({
               </Button>
             </span>
           )}
-          {_.size(userPools) && renderPools()}
+          {_.size(userPools) > 0 && renderPools()}
         </div>
 
         <FormGroup>
