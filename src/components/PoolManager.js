@@ -97,13 +97,13 @@ const PoolManager = ({
   });
 
   const renderPools = () => {
-    const currentValue = _.findIndex(userPools, ({ question: poolQuestion }) => poolQuestion === question);
+    const currentValue = _.findIndex(userPools, ({ id }) => !_.isNil(currentPoolId) && id === _.toNumber(currentPoolId));
     return (
       <FormGroup>
         <Input value={currentValue !== -1 ? currentValue : 'Select pool'} onChange={({ target: { value } }) => { setPool(value); }} type="select" name="select" id="selectPool">
           <option disabled value="Select pool">Select pool</option>
-          {_.map(userPools, ({ question: poolQuestion }, index) => (
-            <option key={index} value={index}>
+          {_.map(userPools, ({ question: poolQuestion, id }, index) => (
+            <option key={index} value={id}>
               {poolQuestion}
             </option>
           ))}

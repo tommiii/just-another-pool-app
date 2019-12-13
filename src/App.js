@@ -29,7 +29,6 @@ const App = ({
 
   const currentPool = _.find(pools, (({ id }) => !_.isNil(currentPoolId) && _.toNumber(id) === _.toNumber(currentPoolId)));
 
-
   return (
     <div className="App p-3">
       <UsersManagement
@@ -43,18 +42,17 @@ const App = ({
           role={role}
           selectedUserId={selectedUserId}
           onSelectAnswer={({ poolId, answerIndex }) => {
-            const poolToUpdate = _.find(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
-            const { answersPerUser } = poolToUpdate;
+            const poolToUpdateIndex = _.findIndex(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
+            const { answersPerUser } = pools[poolToUpdateIndex];
             const userIdex = _.findIndex(answersPerUser, ({ userId }) => _.toNumber(userId) === _.toNumber(selectedUserId));
             let newPool;
             if (!_.isNil(userIdex)) {
               const newAnswersPerUser = _.set([...answersPerUser], [userIdex], { userId: selectedUserId, answer: answerIndex });
-              newPool = { ...poolToUpdate, answersPerUser: newAnswersPerUser };
+              newPool = { ...pools[poolToUpdateIndex], answersPerUser: newAnswersPerUser };
             } else {
-              newPool = { ...poolToUpdate, answersPerUser: [...answersPerUser, { userId: selectedUserId, answer: answerIndex }] };
+              newPool = { ...pools[poolToUpdateIndex], answersPerUser: [...answersPerUser, { userId: selectedUserId, answer: answerIndex }] };
             }
-            const auxPools = _.filter(pools, (({ id }) => _.toNumber(id) !== _.toNumber(poolId)));
-            const newPools = [...auxPools, newPool];
+            const newPools = _.set([...pools], [poolToUpdateIndex], newPool);
             onUpdatePools(newPools);
           }}
           selectedUser={selectedUser}
