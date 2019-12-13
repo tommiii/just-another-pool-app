@@ -35,15 +35,18 @@ const PoolManagement = ({
     onSelectPool({ index, poolId });
   };
 
-  const resetForm = () => {
-    if (currentPoolId) {
-      onResetPool({ poolId: currentPoolId });
-    }
+  const clearForm = () => {
     setQuestion('');
     setAnswers([]);
     setCurrentPoolId(null);
   };
 
+  const resetPool = () => {
+    if (currentPoolId) {
+      onResetPool({ poolId: currentPoolId });
+    }
+    clearForm();
+  };
 
   const renderAnswersForm = () => _.map(answers, (answer, index) => {
     return (
@@ -90,9 +93,7 @@ const PoolManagement = ({
             <Label check>
               <Input
                 checked={answerIndex === index}
-                onChange={() => {
-                  setAnswerIndex(index);
-                }}
+                onChange={() => { setAnswerIndex(index); }}
                 type="radio"
                 name="answer"
                 id={`answer${index}`}
@@ -120,13 +121,23 @@ const PoolManagement = ({
     );
   };
 
+  const save = () => {
+    if (role === ROLES.OWNER) {
+      onUpdatePool({ question, answers, poolId: currentPoolId });
+      clearForm();
+    }
+    if (role === ROLES.RESPONDENT) {
+      onSelectAnswer({ answerIndex, poolId: currentPoolId });
+    }
+  };
+
   return (
     <div className="PoolManagement p-3">
       <Form autoComplete="off">
         <div className="d-flex">
           {role === ROLES.OWNER && (
             <span className="mr-3">
-              <Button onClick={resetForm}>
+              <Button onClick={resetPool}>
                 <Octicon size="small" icon={Plus} />
               </Button>
             </span>
@@ -157,18 +168,10 @@ const PoolManagement = ({
             </span>
           )}
           <span className="ml-auto">
-            {role === ROLES.OWNER && <Button className="mr-2" onClick={resetForm}>Reset</Button>}
+            {role === ROLES.OWNER && <Button className="mr-2" onClick={resetPool}>Reset</Button>}
             <Button
               disabled={_.size(answers) < 2 || _.isNil(question)}
-              onClick={() => {
-                if (role === ROLES.OWNER) {
-                  onUpdatePool({ question, answers, poolId: currentPoolId });
-                  resetForm();
-                }
-                if (role === ROLES.RESPONDENT) {
-                  onSelectAnswer({ answerIndex, poolId: currentPoolId });
-                }
-              }}
+              onClick={save}
             >
               Save
             </Button>

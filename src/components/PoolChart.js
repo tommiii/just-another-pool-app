@@ -4,6 +4,10 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
 
+const chartMargin = {
+  top: 20, right: 30, left: 20, bottom: 5,
+};
+
 const PoolChart = ({
   pool,
 }) => {
@@ -19,9 +23,7 @@ const PoolChart = ({
         width={700}
         height={500}
         data={data}
-        margin={{
-          top: 20, right: 30, left: 20, bottom: 5,
-        }}
+        margin={chartMargin}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="text" />

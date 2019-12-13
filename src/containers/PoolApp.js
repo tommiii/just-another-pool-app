@@ -14,7 +14,7 @@ import {
 } from '../actions';
 
 const PoolApp = ({
-  poolApp, onChangeUser, onAddUser, onUpdatePools,
+  poolApp, changeUser, add, update,
 }) => {
   const [currentPoolId, setCurrentPoolId] = useState(null);
   const [userModal, setUserModal] = useState(false);
@@ -32,6 +32,46 @@ const PoolApp = ({
 
   const currentPool = _.find(pools, (({ id }) => !_.isNil(currentPoolId) && _.toNumber(id) === _.toNumber(currentPoolId)));
 
+  const onSelectAnswer = ({ poolId, answerIndex }) => {
+    const poolToUpdateIndex = _.findIndex(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
+    const { answersPerUser } = pools[poolToUpdateIndex];
+    const userIdex = _.findIndex(answersPerUser, ({ userId }) => _.toNumber(userId) === _.toNumber(selectedUserId));
+    let newPool;
+    if (userIdex !== -1) {
+      const newAnswersPerUser = _.set([...answersPerUser], [userIdex], { userId: selectedUserId, answer: answerIndex });
+      newPool = { ...pools[poolToUpdateIndex], answersPerUser: newAnswersPerUser };
+    } else {
+      newPool = { ...pools[poolToUpdateIndex], answersPerUser: [...answersPerUser, { userId: selectedUserId, answer: answerIndex }] };
+    }
+    const newPools = _.set([...pools], [poolToUpdateIndex], newPool);
+    update(newPools);
+  };
+
+  const onResetPool = (({ poolId }) => {
+    if (poolId) {
+      const newPools = _.filter(pools, (({ id }) => _.toNumber(id) !== _.toNumber(poolId)));
+      update(newPools);
+    }
+    setCurrentPoolId(null);
+  });
+
+  const onUpdatePool = ({ question, answers, poolId }) => {
+    if (poolId) {
+      const poolToUpdate = _.find(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
+      const newPool = { ...poolToUpdate, question, options: answers };
+      const auxPools = _.filter(pools, (({ id }) => _.toNumber(id) !== _.toNumber(poolId)));
+      const newPools = [...auxPools, newPool];
+      update(newPools);
+    } else {
+      const newPool = {
+        id: new Date().getTime(), question, options: answers, ownerId: selectedUserId, answersPerUser: [],
+      };
+      const newPools = [...pools, newPool];
+      update(newPools);
+    }
+    setCurrentPoolId(null);
+  };
+
   return (
     <div className="App p-3 h-100">
       <div className="float-right d-flex">
@@ -44,8 +84,8 @@ const PoolApp = ({
       </div>
       <Modal isOpen={userModal} toggle={toggleUserModal}>
         <UsersManagement
-          onChangeUser={(newId) => { onChangeUser(newId); setUserModal(false); setCurrentPoolId(null); }}
-          onAddUser={(newUser => { onAddUser(newUser); })}
+          onChangeUser={(newId) => { changeUser(newId); setUserModal(false); setCurrentPoolId(null); }}
+          onAddUser={(newUser => { add(newUser); })}
           selectedUserId={selectedUserId}
           users={users}
         />
@@ -55,47 +95,13 @@ const PoolApp = ({
           <PoolManager
             role={role}
             selectedUserId={selectedUserId}
-            onResetForm={() => {
-              setCurrentPoolId(null);
-            }}
-            onSelectAnswer={({ poolId, answerIndex }) => {
-              const poolToUpdateIndex = _.findIndex(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
-              const { answersPerUser } = pools[poolToUpdateIndex];
-              const userIdex = _.findIndex(answersPerUser, ({ userId }) => _.toNumber(userId) === _.toNumber(selectedUserId));
-              let newPool;
-              if (userIdex !== -1) {
-                const newAnswersPerUser = _.set([...answersPerUser], [userIdex], { userId: selectedUserId, answer: answerIndex });
-                newPool = { ...pools[poolToUpdateIndex], answersPerUser: newAnswersPerUser };
-              } else {
-                newPool = { ...pools[poolToUpdateIndex], answersPerUser: [...answersPerUser, { userId: selectedUserId, answer: answerIndex }] };
-              }
-              const newPools = _.set([...pools], [poolToUpdateIndex], newPool);
-              onUpdatePools(newPools);
-            }}
+            onResetForm={() => { setCurrentPoolId(null); }}
+            onSelectAnswer={onSelectAnswer}
             selectedUser={selectedUser}
             userPools={userPools}
-            onResetPool={(({ poolId }) => {
-              const newPools = _.filter(pools, (({ id }) => _.toNumber(id) !== _.toNumber(poolId)));
-              onUpdatePools(newPools);
-              setCurrentPoolId(null);
-            })}
+            onResetPool={onResetPool}
             onSelectPool={(({ poolId }) => { setCurrentPoolId(poolId); })}
-            onUpdatePool={({ question, answers, poolId }) => {
-              if (poolId) {
-                const poolToUpdate = _.find(pools, ({ id }) => _.toNumber(id) === _.toNumber(poolId));
-                const newPool = { ...poolToUpdate, question, options: answers };
-                const auxPools = _.filter(pools, (({ id }) => _.toNumber(id) !== _.toNumber(poolId)));
-                const newPools = [...auxPools, newPool];
-                onUpdatePools(newPools);
-              } else {
-                const newPool = {
-                  id: new Date().getTime(), question, options: answers, ownerId: selectedUserId, answersPerUser: [],
-                };
-                const newPools = [...pools, newPool];
-                onUpdatePools(newPools);
-                setCurrentPoolId(null);
-              }
-            }}
+            onUpdatePool={onUpdatePool}
           />
         </div>
         {currentPool
@@ -115,9 +121,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => {
   return {
-    onChangeUser: id => { dispatch(setUserId(id)); },
-    onAddUser: user => { dispatch(addUser(user)); },
-    onUpdatePools: pools => { dispatch(updatePools(pools)); },
+    changeUser: id => { dispatch(setUserId(id)); },
+    add: user => { dispatch(addUser(user)); },
+    update: pools => { dispatch(updatePools(pools)); },
   };
 };
 
