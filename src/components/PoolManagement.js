@@ -8,7 +8,7 @@ import { ROLES } from '../constants';
 
 
 const PoolManagement = ({
-  onResetForm, onUpdatePool, onSelectAnswer, onSelectPool, userPools, role, selectedUserId,
+  onResetPool, onUpdatePool, onSelectAnswer, onSelectPool, userPools, role, selectedUserId,
 }) => {
   const [question, setQuestion] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -36,10 +36,12 @@ const PoolManagement = ({
   };
 
   const resetForm = () => {
+    if (currentPoolId) {
+      onResetPool({ poolId: currentPoolId });
+    }
     setQuestion('');
     setAnswers([]);
     setCurrentPoolId(null);
-    onResetForm();
   };
 
 
@@ -182,6 +184,7 @@ PoolManagement.defaultProps = {
   onSelectAnswer: () => { },
   onSelectPool: () => { },
   onPoolCreate: () => { },
+  onResetPool: () => { },
 };
 
 export default PoolManagement;

@@ -74,6 +74,11 @@ const PoolApp = ({
             }}
             selectedUser={selectedUser}
             userPools={userPools}
+            onResetPool={(({ poolId }) => {
+              const newPools = _.filter(pools, (({ id }) => _.toNumber(id) !== _.toNumber(poolId)));
+              onUpdatePools(newPools);
+              setCurrentPoolId(null);
+            })}
             onSelectPool={(({ poolId }) => { setCurrentPoolId(poolId); })}
             onUpdatePool={({ question, answers, poolId }) => {
               if (poolId) {
