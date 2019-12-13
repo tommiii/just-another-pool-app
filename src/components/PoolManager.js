@@ -7,7 +7,7 @@ import { ROLES } from '../constants';
 
 
 const PoolManager = ({
-  onUpdatePool, onSelectAnswer, userPools, role, selectedUserId,
+  onUpdatePool, onSelectAnswer, userPools, role, selectedUserId, onSelectPool,
 }) => {
   const [question, setQuestion] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -25,6 +25,7 @@ const PoolManager = ({
       const { answer } = currentAnswer;
       setAnswerIndex(answer);
     }
+    onSelectPool({ index, poolId });
   };
 
   const resetForm = () => {
@@ -37,7 +38,7 @@ const PoolManager = ({
   const renderAnswersForm = () => _.map(answers, (answer, index) => {
     return (
       <div key={index}>
-        <FormGroup tag="fieldset" check={role === ROLES.USER}>
+        <FormGroup tag="fieldset" check={role === ROLES.RESPONDENT}>
           {role === ROLES.OWNER && (
             <Label for={`answer${index}`}>
               {`Answer #${index + 1}`}
@@ -76,7 +77,7 @@ const PoolManager = ({
               maxLength="80"
             />
           )}
-          {role === ROLES.USER && (
+          {role === ROLES.RESPONDENT && (
             <Label check>
               <Input
                 checked={answerIndex === index}
@@ -87,7 +88,7 @@ const PoolManager = ({
                 name="answer"
                 id={`answer${index}`}
               />
-              {role === ROLES.USER && answer}
+              {role === ROLES.RESPONDENT && answer}
             </Label>
           )}
         </FormGroup>
@@ -96,13 +97,13 @@ const PoolManager = ({
   });
 
   const renderPools = () => {
-    const currentValue = _.find(userPools, ({ id }) => id === currentPoolId);
+    const currentValue = _.findIndex(userPools, ({ question: poolQuestion }) => poolQuestion === question);
     return (
       <FormGroup>
-        <Input value={!currentPoolId ? 'Select pool' : currentValue} onChange={({ target: { value } }) => { setPool(value); }} type="select" name="select" id="selectPool">
+        <Input value={currentValue !== -1 ? currentValue : 'Select pool'} onChange={({ target: { value } }) => { setPool(value); }} type="select" name="select" id="selectPool">
           <option disabled value="Select pool">Select pool</option>
-          {_.map(userPools, ({ question: poolQuestion, id }, index) => (
-            <option key={index} value={id}>
+          {_.map(userPools, ({ question: poolQuestion }, index) => (
+            <option key={index} value={index}>
               {poolQuestion}
             </option>
           ))}
@@ -112,7 +113,7 @@ const PoolManager = ({
   };
 
   return (
-    <div className="PoolCreator p-3">
+    <div className="PoolManager p-3">
       <Form>
         <div className="d-flex">
           {role === ROLES.OWNER && (
@@ -126,7 +127,7 @@ const PoolManager = ({
         <FormGroup>
           <Label for="question">Question</Label>
           <Input
-            disabled={role === ROLES.USER}
+            disabled={role === ROLES.RESPONDENT}
             onChange={({ target: { value } }) => { setQuestion(value); }}
             value={question}
             type="text"
@@ -149,7 +150,7 @@ const PoolManager = ({
               if (role === ROLES.OWNER) {
                 onUpdatePool({ question, answers, poolId: currentPoolId });
               }
-              if (role === ROLES.USER) {
+              if (role === ROLES.RESPONDENT) {
                 onSelectAnswer({ answerIndex, poolId: currentPoolId });
               }
             }}

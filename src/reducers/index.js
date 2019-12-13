@@ -14,13 +14,18 @@ const initialState = {
     },
     {
       name: 'Caio',
-      role: 'USER',
+      role: 'RESPONDENT',
       id: 1,
     },
     {
       name: 'Semprogno',
       role: 'RESPONDENT',
       id: 2,
+    },
+    {
+      name: 'Gianni',
+      role: 'RESPONDENT',
+      id: 3,
     },
   ],
   pools: [
@@ -34,7 +39,24 @@ const initialState = {
         'This conversation is going out of control...',
       ],
       answersPerUser: [
-        { userId: 1, answer: 2 },
+        { userId: 1, answer: 0 },
+        { userId: 2, answer: 2 },
+        { userId: 3, answer: 2 },
+      ],
+    },
+    {
+      id: 1,
+      ownerId: 0,
+      question: 'This is a question',
+      options: [
+        'This is an answer',
+        'This is another answer',
+        'This is another answer too',
+      ],
+      answersPerUser: [
+        { userId: 1, answer: 1 },
+        { userId: 2, answer: 2 },
+        { userId: 3, answer: 1 },
       ],
     },
   ],

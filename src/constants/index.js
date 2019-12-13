@@ -4,6 +4,5 @@ export const UPDATE_POOLS = 'UPDATE_POOLS';
 
 export const ROLES = {
   OWNER: 'OWNER',
-  USER: 'USER',
   RESPONDENT: 'RESPONDENT',
 };

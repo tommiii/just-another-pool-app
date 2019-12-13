@@ -73,7 +73,6 @@ const UsersManagement = ({
                 <Label for="exampleSelect">Role</Label>
                 <Input onChange={({ target: { value } }) => { setNewUser(currentState => ({ ...currentState, role: value })); }} type="select" name="role" id="role">
                   <option>{ROLES.OWNER}</option>
-                  <option>{ROLES.USER}</option>
                   <option>{ROLES.RESPONDENT}</option>
                 </Input>
               </FormGroup>
