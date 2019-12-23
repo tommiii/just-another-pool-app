@@ -85,7 +85,12 @@ const PoolApp = ({
       <Modal isOpen={userModal} toggle={toggleUserModal}>
         <UsersManagement
           onChangeUser={(newId) => { changeUser(newId); setUserModal(false); setCurrentPoolId(null); }}
-          onAddUser={(newUser => { add(newUser); })}
+          onAddUser={(newUser => {
+            const { id: newUserId } = newUser;
+            add(newUser);
+            changeUser(newUserId);
+            setUserModal(false);
+          })}
           selectedUserId={selectedUserId}
           users={users}
         />

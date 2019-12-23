@@ -145,19 +145,21 @@ const PoolManagement = ({
           {_.size(userPools) > 0 && renderPools()}
         </div>
 
-        <FormGroup>
-          <Label for="question">Question</Label>
-          <Input
-            disabled={role === ROLES.RESPONDENT}
-            onChange={({ target: { value } }) => { setQuestion(value); }}
-            value={question}
-            type="text"
-            name="question"
-            id="question"
-            placeholder={role === ROLES.OWNER ? 'Type your question...' : 'Select a pool from the above menu'}
-            maxLength="80"
-          />
-        </FormGroup>
+        {role === ROLES.OWNER && (
+          <FormGroup>
+            <Label for="question">Question</Label>
+            <Input
+              disabled={role === ROLES.RESPONDENT}
+              onChange={({ target: { value } }) => { setQuestion(value); }}
+              value={question}
+              type="text"
+              name="question"
+              id="question"
+              placeholder={role === ROLES.OWNER ? 'Type your question...' : 'Select a pool from the above menu'}
+              maxLength="80"
+            />
+          </FormGroup>
+        )}
         {renderAnswersForm()}
         <div className="d-flex">
           {role === ROLES.OWNER && (
